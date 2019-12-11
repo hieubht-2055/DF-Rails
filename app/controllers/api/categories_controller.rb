@@ -8,6 +8,16 @@ class Api::CategoriesController < ApplicationController
     render json: {status: :ok, message: message, categories: categories, total_pages: total_pages}
   end
 
+  def create
+    category = Category.create category_params
+    if category.errors.present?
+      errors = category.errors
+      render json: { errors: errors }
+    else
+      render json: { status: :ok }
+    end
+  end
+
   def destroy
     category = Category.find_by id: params[:id]
     category.destroy unless category.nil?
@@ -18,5 +28,11 @@ class Api::CategoriesController < ApplicationController
     end
     message = "Success"
     render json: {status: :ok, message: message, categories: categories, total_pages: total_pages}
+  end
+
+  private
+
+  def category_params
+    params.require(:category).permit :name, :image
   end
 end
